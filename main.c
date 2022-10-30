@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct
 {
@@ -62,34 +63,99 @@ char *read_line(FILE *f)
     return p;
 }
 
-array2d arr2d_readfile(char *filename)
+void linetoarr(char *s, double *arr, int J)
 {
-    FILE *fptr;
+    char *char_str_ptr = s;
+    char *str_ptr;
+    double num;
 
+    for (int j = 0; j < J; j++)
+    {
+        num = strtod(char_str_ptr, &str_ptr);
+        //printf("%f", num);
+        char_str_ptr = str_ptr + 1;
+        arr[j] = num;
+    }
+}
+
+int arr2d_readfile(char *filename, array2d *arr)
+{
+    int lines_allocated = 1;
+    arr->A = (double **)malloc(lines_allocated * sizeof(double *));
+    arr->I = lines_allocated;
+
+    FILE *fptr;
     if ((fptr = fopen("matrix.csv", "rb")) == NULL)
     {
         printf("Error! opening file");
 
-        exit(1);
+        return 1;
     }
 
     char *s;
-    // s = read_line(fptr);
+    s = read_line(fptr);
 
-    while (s = read_line(fptr))
+    char *char_str_ptr = s;
+    char *str_ptr;
+    // Cols counter
+
+    int counter = 0;
+
+    while (1)
     {
-        printf("%s\n", s);
-        free(s);
+        counter++;
+        strtod(char_str_ptr, &str_ptr);
+        arr->J = arr->J + 1;
+        if (*str_ptr == ',')
+        {
+            char_str_ptr = str_ptr + 1;
+        }
+        else
+        {
+            break;
+        }
     }
+    arr->J = counter;
 
+    int i = 0;
+
+    // linetoarr(s, arr->A[i], arr->J);
+    arr->A[0] = (double *)malloc(arr->J * sizeof(double));
+
+    do
+    {
+        if (i == lines_allocated)
+        {
+            int bgn = lines_allocated - 1;
+            lines_allocated = lines_allocated * 2;
+            arr->A = realloc(arr->A, lines_allocated * sizeof(double *));
+            // for (int il = 0; il < bgn; il++)
+            // {
+            //     arr->A[il] = realloc(arr->A[il],arr->J * sizeof(double));
+            // }
+            for (int il = bgn; il < lines_allocated; il++)
+            {
+                arr->A[il] = (double *)malloc(arr->J * sizeof(double));
+            }
+        }
+
+        linetoarr(s, arr->A[i], arr->J);
+        i++;
+
+        arr->I = i;
+        //printf("%s\n", s);
+        free(s);
+    } while (s = read_line(fptr));
     fclose(fptr);
 
-    return;
+    return 0;
 }
 
 int main()
 {
-    // arr2d_readfile("matrix.csv");
+
+    array2d arr;
+    arr2d_readfile("matrix.csv", &arr);
     //  array2d arr = arr2d_create(4, 5);
 
     // for (int i = 0; i < arr.I; i++)
@@ -99,7 +165,7 @@ int main()
     //         arr.A[i][j] = i + j;
     //     }
     // }
-    // arr2d_print(arr);
+    arr2d_print(arr);
 
     return 0;
 }
