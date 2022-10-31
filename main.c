@@ -98,7 +98,6 @@ void linetoarr(char *s, double *arr, int J)
     for (int j = 0; j < J; j++)
     {
         num = strtod(char_str_ptr, &str_ptr);
-        // printf("%f", num);
         char_str_ptr = str_ptr + 1;
         arr[j] = num;
     }
@@ -147,6 +146,7 @@ int arr2d_readfile(char *filename, array2d *arr)
         arr->A[i] = (double *)malloc(arr->J * sizeof(double));
     }
 
+    // lines to arr
     do
     {
         if (arr->I == lines_allocated)
@@ -187,48 +187,61 @@ int get_int_limitations(int *target, int min, int max, char *text)
     return 0;
 }
 
+double rectangle_formula(array2d arr, int i, int j, int x, int y)
+{
+    return (arr.A[i][j] * arr.A[x][y] - arr.A[i][y] * arr.A[x][j]) / arr.A[x][y];
+}
+
 void rectangle(array2d arr, int x, int y)
 {
-    for (int i = 0; i < arr.I; i++)
-    {
-        for (int j = 0; j < arr.J; j++)
-        {
-            arr.A[i][j] = 0;
-        }
-    }
-
     // L square
     for (int j = 0; j < y; j++)
     {
-        // U square
-        for (int i = 0; i < x; i++)
+        if (arr.A[x][j] != 0)
         {
-            arr.A[i][j] = 1;
-        }
-        // D square
-        for (int i = x + 1; i < arr.I; i++)
-        {
-            arr.A[i][j] = 3;
+            // U square
+            for (int i = 0; i < x; i++)
+            {
+                arr.A[i][j] = rectangle_formula(arr, i, j, x, y);
+            }
+            // D square
+            for (int i = x + 1; i < arr.I; i++)
+            {
+                arr.A[i][j] = rectangle_formula(arr, i, j, x, y);
+            }
+            arr.A[x][j] = arr.A[x][j] / arr.A[x][y];
         }
     }
-
 
     // R square
     for (int j = y + 1; j < arr.J; j++)
     {
-        // U square
-        for (int i = 0; i < x; i++)
+        if (arr.A[x][j] != 0)
         {
-
-            arr.A[i][j] = 2;
-        }
-        // D square
-        for (int i = x + 1; i < arr.I; i++)
-        {
-
-            arr.A[i][j] = 4;
+            // U square
+            for (int i = 0; i < x; i++)
+            {
+                arr.A[i][j] = rectangle_formula(arr, i, j, x, y);
+            }
+            // D square
+            for (int i = x + 1; i < arr.I; i++)
+            {
+                arr.A[i][j] = rectangle_formula(arr, i, j, x, y);
+            }
+            arr.A[x][j] = arr.A[x][j] / arr.A[x][y];
         }
     }
+
+    // Cross
+    for (int i = 0; i < x; i++)
+    {
+        arr.A[i][y] = 0;
+    }
+    for (int i = x + 1; i < arr.I; i++)
+    {
+        arr.A[i][y] = 0;
+    }
+    arr.A[x][y] = 1;
 
 }
 
