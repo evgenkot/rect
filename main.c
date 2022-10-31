@@ -26,12 +26,12 @@ void arr2d_print(array2d arr)
     int I = arr.I;
     int J = arr.J;
     printf("Printing a 2D Array:\n");
-    
+
     printf("   ");
     for (int j = 0; j < J; j++)
         printf("%14d", j);
     printf("\n");
-    
+
     for (int i = 0; i < I; i++)
     {
         printf("%3d", i);
@@ -55,10 +55,10 @@ int element_exist(array2d arr, int i, int j)
 }
 
 void print_cool_element(array2d arr, int i, int j)
-{   
+{
     if (element_exist(arr, i, j))
     {
-        printf("A[%d][%d] = %f\n", i, j, arr.A[i][j]);    
+        printf("A[%d][%d] = %f\n", i, j, arr.A[i][j]);
     }
 }
 
@@ -98,7 +98,7 @@ void linetoarr(char *s, double *arr, int J)
     for (int j = 0; j < J; j++)
     {
         num = strtod(char_str_ptr, &str_ptr);
-        //printf("%f", num);
+        // printf("%f", num);
         char_str_ptr = str_ptr + 1;
         arr[j] = num;
     }
@@ -106,7 +106,7 @@ void linetoarr(char *s, double *arr, int J)
 
 int arr2d_readfile(char *filename, array2d *arr)
 {
-    //Open file
+    // Open file
     FILE *fptr;
     if ((fptr = fopen("matrix.csv", "rb")) == NULL)
     {
@@ -116,7 +116,7 @@ int arr2d_readfile(char *filename, array2d *arr)
     }
 
     char *s;
-    //Count Cols
+    // Count Cols
     s = read_line(fptr);
     char *char_str_ptr = s;
     char *str_ptr;
@@ -136,8 +136,7 @@ int arr2d_readfile(char *filename, array2d *arr)
             break;
         }
     }
-    
-    
+
     int lines_allocated = 1;
     arr->A = (double **)malloc(lines_allocated * sizeof(double *));
     arr->I = 0;
@@ -147,8 +146,7 @@ int arr2d_readfile(char *filename, array2d *arr)
     {
         arr->A[i] = (double *)malloc(arr->J * sizeof(double));
     }
-    
-    
+
     do
     {
         if (arr->I == lines_allocated)
@@ -176,7 +174,7 @@ int arr2d_readfile(char *filename, array2d *arr)
     return 0;
 }
 
-int get_int_limitations(int *target, int min, int max, char * text)
+int get_int_limitations(int *target, int min, int max, char *text)
 {
     *target = *target + 1;
     int result;
@@ -192,54 +190,45 @@ int get_int_limitations(int *target, int min, int max, char * text)
 void rectangle(array2d arr, int x, int y)
 {
     for (int i = 0; i < arr.I; i++)
-    {   
+    {
         for (int j = 0; j < arr.J; j++)
         {
             arr.A[i][j] = 0;
         }
     }
 
-
-    //UL square
-    for (int i = 0; i < x; i++)
-    {   
-        for (int j = 0; j < y; j++)
+    // L square
+    for (int j = 0; j < y; j++)
+    {
+        // U square
+        for (int i = 0; i < x; i++)
         {
             arr.A[i][j] = 1;
         }
-    }
-
-    //UR square
-    for (int i = 0; i < x; i++)
-    {   
-        for (int j = y + 1; j < arr.J; j++)
-        {
-            arr.A[i][j] = 2;
-        }
-    }
-
-    //DL square
-    for (int i = x + 1; i < arr.I; i++)
-    {   
-        for (int j = 0; j < y; j++)
+        // D square
+        for (int i = x + 1; i < arr.I; i++)
         {
             arr.A[i][j] = 3;
         }
     }
 
-    //DR square
-    for (int i = x + 1; i < arr.I; i++)
-    {   
-        for (int j = y + 1; j < arr.J; j++)
+
+    // R square
+    for (int j = y + 1; j < arr.J; j++)
+    {
+        // U square
+        for (int i = 0; i < x; i++)
         {
+
+            arr.A[i][j] = 2;
+        }
+        // D square
+        for (int i = x + 1; i < arr.I; i++)
+        {
+
             arr.A[i][j] = 4;
         }
     }
-    
-    
-    
-    
-    
 
 }
 
@@ -248,7 +237,6 @@ int main()
 
     array2d arr;
     arr2d_readfile("matrix.csv", &arr);
-
 
     arr2d_print(arr);
     int i;
@@ -261,8 +249,6 @@ int main()
     rectangle(arr, i, j);
 
     arr2d_print(arr);
-    
-
 
     return 0;
 }
