@@ -26,14 +26,39 @@ void arr2d_print(array2d arr)
     int I = arr.I;
     int J = arr.J;
     printf("Printing a 2D Array:\n");
+    
+    printf("   ");
+    for (int j = 0; j < J; j++)
+        printf("%14d", j);
+    printf("\n");
+    
     for (int i = 0; i < I; i++)
     {
-        printf ("line %d: ", i);
+        printf("%3d", i);
         for (int j = 0; j < J; j++)
         {
-            printf("%f ", arr.A[i][j]);
+            printf("%14.5f", arr.A[i][j]);
         }
         printf("\n");
+    }
+}
+
+int element_exist(array2d arr, int i, int j)
+{
+    if (i >= arr.I || i < 0 || j >= arr.J || j < 0)
+    {
+        printf("doesnt exist\n");
+        return 0;
+    }
+    printf("exist\n");
+    return 1;
+}
+
+void print_cool_element(array2d arr, int i, int j)
+{   
+    if (element_exist(arr, i, j))
+    {
+        printf("A[%d][%d] = %f\n", i, j, arr.A[i][j]);    
     }
 }
 
@@ -151,6 +176,73 @@ int arr2d_readfile(char *filename, array2d *arr)
     return 0;
 }
 
+int get_int_limitations(int *target, int min, int max, char * text)
+{
+    *target = *target + 1;
+    int result;
+    do
+    {
+        printf("%s [%d:%d]\n>", text, min, max);
+        result = scanf("%d", target);
+    } while (*target < min || *target > max);
+
+    return 0;
+}
+
+void rectangle(array2d arr, int x, int y)
+{
+    for (int i = 0; i < arr.I; i++)
+    {   
+        for (int j = 0; j < arr.J; j++)
+        {
+            arr.A[i][j] = 0;
+        }
+    }
+
+
+    //UL square
+    for (int i = 0; i < x; i++)
+    {   
+        for (int j = 0; j < y; j++)
+        {
+            arr.A[i][j] = 1;
+        }
+    }
+
+    //UR square
+    for (int i = 0; i < x; i++)
+    {   
+        for (int j = y + 1; j < arr.J; j++)
+        {
+            arr.A[i][j] = 2;
+        }
+    }
+
+    //DL square
+    for (int i = x + 1; i < arr.I; i++)
+    {   
+        for (int j = 0; j < y; j++)
+        {
+            arr.A[i][j] = 3;
+        }
+    }
+
+    //DR square
+    for (int i = x + 1; i < arr.I; i++)
+    {   
+        for (int j = y + 1; j < arr.J; j++)
+        {
+            arr.A[i][j] = 4;
+        }
+    }
+    
+    
+    
+    
+    
+
+}
+
 int main()
 {
 
@@ -159,6 +251,18 @@ int main()
 
 
     arr2d_print(arr);
+    int i;
+    get_int_limitations(&i, 0, arr.I - 1, "Enter i");
+
+    int j;
+    get_int_limitations(&j, 0, arr.J - 1, "Enter j");
+    print_cool_element(arr, i, j);
+
+    rectangle(arr, i, j);
+
+    arr2d_print(arr);
+    
+
 
     return 0;
 }
