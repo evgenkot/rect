@@ -28,6 +28,7 @@ void arr2d_print(array2d arr)
     printf("Printing a 2D Array:\n");
     for (int i = 0; i < I; i++)
     {
+        printf ("line %d: ", i);
         for (int j = 0; j < J; j++)
         {
             printf("%f ", arr.A[i][j]);
@@ -80,10 +81,7 @@ void linetoarr(char *s, double *arr, int J)
 
 int arr2d_readfile(char *filename, array2d *arr)
 {
-    int lines_allocated = 1;
-    arr->A = (double **)malloc(lines_allocated * sizeof(double *));
-    arr->I = lines_allocated;
-
+    //Open file
     FILE *fptr;
     if ((fptr = fopen("matrix.csv", "rb")) == NULL)
     {
@@ -93,12 +91,10 @@ int arr2d_readfile(char *filename, array2d *arr)
     }
 
     char *s;
+    //Count Cols
     s = read_line(fptr);
-
     char *char_str_ptr = s;
     char *str_ptr;
-    // Cols counter
-
     int counter = 0;
 
     while (1)
@@ -115,37 +111,41 @@ int arr2d_readfile(char *filename, array2d *arr)
             break;
         }
     }
+    
+    
+    int lines_allocated = 1;
+    arr->A = (double **)malloc(lines_allocated * sizeof(double *));
+    arr->I = 0;
     arr->J = counter;
 
-    int i = 0;
-
-    // linetoarr(s, arr->A[i], arr->J);
-    arr->A[0] = (double *)malloc(arr->J * sizeof(double));
-
+    for (int i = 0; i < lines_allocated; i++)
+    {
+        arr->A[i] = (double *)malloc(arr->J * sizeof(double));
+    }
+    
+    
     do
     {
-        if (i == lines_allocated)
+        if (arr->I == lines_allocated)
         {
-            int bgn = lines_allocated - 1;
+            printf("Realloc\n");
+            int bgn = lines_allocated;
             lines_allocated = lines_allocated * 2;
             arr->A = realloc(arr->A, lines_allocated * sizeof(double *));
-            // for (int il = 0; il < bgn; il++)
-            // {
-            //     arr->A[il] = realloc(arr->A[il],arr->J * sizeof(double));
-            // }
+
             for (int il = bgn; il < lines_allocated; il++)
             {
                 arr->A[il] = (double *)malloc(arr->J * sizeof(double));
             }
         }
 
-        linetoarr(s, arr->A[i], arr->J);
-        i++;
+        linetoarr(s, arr->A[arr->I], arr->J);
 
-        arr->I = i;
-        //printf("%s\n", s);
+        arr->I = arr->I + 1;
+
         free(s);
     } while (s = read_line(fptr));
+
     fclose(fptr);
 
     return 0;
@@ -156,15 +156,8 @@ int main()
 
     array2d arr;
     arr2d_readfile("matrix.csv", &arr);
-    //  array2d arr = arr2d_create(4, 5);
 
-    // for (int i = 0; i < arr.I; i++)
-    // {
-    //     for (int j = 0; j < arr.J; j++)
-    //     {
-    //         arr.A[i][j] = i + j;
-    //     }
-    // }
+
     arr2d_print(arr);
 
     return 0;
