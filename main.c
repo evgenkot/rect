@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define clear() printf("\033[H\033[J")
+
 typedef struct
 {
     int I;
@@ -19,6 +21,15 @@ array2d arr2d_create(int I, int J)
     }
     array2d arr = {I, J, A};
     return arr;
+}
+
+void arr2d_free(array2d arr)
+{
+    for (int i = 0; i < arr.I; i++)
+    {
+        free(arr.A[i]);
+    }
+    free(arr.A);
 }
 
 void arr2d_print(array2d arr)
@@ -242,26 +253,45 @@ void rectangle(array2d arr, int x, int y)
         arr.A[i][y] = 0;
     }
     arr.A[x][y] = 1;
-
 }
 
 int main()
 {
-
     array2d arr;
     arr2d_readfile("matrix.csv", &arr);
+    int c;
 
-    arr2d_print(arr);
-    int i;
-    get_int_limitations(&i, 0, arr.I - 1, "Enter i");
+    do
+    {
+        clear();
+        arr2d_print(arr);
+        get_int_limitations(&c, 0, 1, "1-rect 0-exit\n");
 
-    int j;
-    get_int_limitations(&j, 0, arr.J - 1, "Enter j");
-    print_cool_element(arr, i, j);
+        switch (c)
+        {
 
-    rectangle(arr, i, j);
+        case 1:
+        {
+            // arr2d_print(arr);
+            int i;
+            get_int_limitations(&i, 0, arr.I - 1, "Enter i");
 
-    arr2d_print(arr);
+            int j;
+            get_int_limitations(&j, 0, arr.J - 1, "Enter j");
+            print_cool_element(arr, i, j);
 
+            rectangle(arr, i, j);
+
+            break;
+        }
+
+        default:
+            break;
+        }
+    
+    //getchar();
+    } while (c);
+
+    arr2d_free(arr);
     return 0;
 }
