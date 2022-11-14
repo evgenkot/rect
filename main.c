@@ -58,10 +58,10 @@ int element_exist(array2d arr, int i, int j)
 {
     if (i >= arr.I || i < 0 || j >= arr.J || j < 0)
     {
-        printf("doesnt exist\n");
+        // doesnt exist
         return 0;
     }
-    printf("exist\n");
+    // exist
     return 1;
 }
 
@@ -73,7 +73,7 @@ void print_cool_element(array2d arr, int i, int j)
     }
 }
 
-char *read_line(FILE *f)
+char *read_line_file(FILE *f)
 {
     int cap = 32, next = 0, c;
     char *p = malloc(cap);
@@ -98,6 +98,30 @@ char *read_line(FILE *f)
     }
 
     return p;
+}
+
+char *read_line()
+{
+    int cap = 1, len = 0, ch;
+    char *str = malloc(cap);
+    while (1)
+    {
+        if (len == cap)
+        {
+            str = realloc(str, cap *= 2);
+            if (str == NULL)
+            {
+                return NULL;
+            }
+        }
+        ch = getchar();
+        if (ch == '\n')
+        {
+            break;
+        }
+        str[len++] = ch;
+    }
+    return str;
 }
 
 void linetoarr(char *s, double *arr, int J)
@@ -127,7 +151,7 @@ int arr2d_readfile(char *filename, array2d *arr)
 
     char *s;
     // Count Cols
-    s = read_line(fptr);
+    s = read_line_file(fptr);
     char *char_str_ptr = s;
     char *str_ptr;
     int counter = 0;
@@ -178,7 +202,7 @@ int arr2d_readfile(char *filename, array2d *arr)
         arr->I = arr->I + 1;
 
         free(s);
-    } while (s = read_line(fptr));
+    } while (s = read_line_file(fptr));
 
     fclose(fptr);
 
@@ -187,14 +211,18 @@ int arr2d_readfile(char *filename, array2d *arr)
 
 int get_int_limitations(int *target, int min, int max, char *text)
 {
-    *target = *target + 1;
-    int result;
+    *target = max + 1;
+    char *str;
+    // int result;
     do
     {
-        printf("%s [%d:%d]\n>", text, min, max);
-        result = scanf("%d", target);
-    } while (*target < min || *target > max);
 
+        printf("%s [%d:%d]\n>", text, min, max);
+        str = read_line();
+        *target = atoi(str);
+        // result = scanf("%d", target);
+    } while (*target < min || *target > max);
+    free(str);
     return 0;
 }
 
@@ -285,11 +313,15 @@ int main()
             break;
         }
 
+        case 0:
+        {
+            printf("Press any key...");
+        }
         default:
             break;
         }
-    
-    //getchar();
+
+        getchar();
     } while (c);
 
     arr2d_free(arr);
