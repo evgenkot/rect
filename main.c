@@ -121,7 +121,7 @@ char *read_line()
         }
         str[len++] = ch;
     }
-    str[len++] = '\0';
+    str[len] = '\0';
     return str;
 }
 
