@@ -1,0 +1,3 @@
+[submodule "mixed-fraction"]
+	path = mixed-fraction
+	url = git@github.com:EvgenKot/mixed-fraction.git
